@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Blog</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+          <div class="position-sticky">
+            <h4 class="sidebar-heading">Blog Posts</h4>
+            <ul class="nav flex-column">
+              <% posts.forEach(post => { %>
+              <li class="nav-item">
+                <a class="nav-link" href="#post-<%= post.id %>"
+                  ><%= post.title %></a
+                >
+              </li>
+              <% }); %>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+          >
+            <h1 class="h2">My Blog</h1>
+          </div>
+          <div>
+            <p>
+              This project is a simple yet functional Blog web application built
+              using Node.js, Express.js, and EJS, enhanced with Bootstrap for
+              styling. The application allows users to create, view, edit, and
+              delete blog posts. Posts are displayed on the home page with
+              proper formatting, including paragraphs and line breaks. A sidebar
+              lists all blog posts in the order of creation, providing easy
+              navigation. The application also features pagination to manage the
+              display of posts, ensuring a clean and organized user experience.
+              While posts are stored in memory and do not persist across
+              sessions, the project serves as a solid foundation for building
+              more complex blogging platforms.
+            </p>
+          </div>
+
+          <!-- Create Post Form -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h3>Create a New Post</h3>
+            </div>
+            <div class="card-body">
+              <form action="/posts" method="POST">
+                <div class="mb-3">
+                  <label for="title" class="form-label">Post Title</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    placeholder="Post Title"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="content" class="form-label">Post Content</label>
+                  <textarea
+                    class="form-control"
+                    id="content"
+                    name="content"
+                    rows="5"
+                    placeholder="Post Content"
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  Create Post
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Display Posts with Pagination -->
+          <div id="posts">
+            <% posts.slice(startIndex, endIndex).forEach(post => { %>
+            <div id="post-<%= post.id %>" class="card mb-4">
+              <div class="card-header">
+                <h3><%= post.title %></h3>
+              </div>
+              <div class="card-body"><%- formatContent(post.content) %></div>
+              <div
+                class="card-footer text-muted d-flex justify-content-between"
+              >
+                <small
+                  >Posted on: <%= new Date(post.id).toLocaleString() %></small
+                >
+                <div>
+                  <a
+                    href="/posts/<%= post.id %>/edit"
+                    class="btn btn-sm btn-secondary"
+                    >Edit</a
+                  >
+                  <form
+                    action="/posts/<%= post.id %>/delete"
+                    method="POST"
+                    style="display: inline"
+                    onsubmit="return confirm('Are you sure you want to delete this post?');"
+                  >
+                    <button type="submit" class="btn btn-sm btn-danger">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              <% if (currentPage > 1) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage - 1 %>"
+                  >Previous</a
+                >
+              </li>
+              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              </li>
+              <% } %> <% if (currentPage < totalPages) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage + 1 %>"
+                  >Next</a
+                >
+              </li>
+              <% } %>
+            </ul>
+          </nav>
+        </main>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
